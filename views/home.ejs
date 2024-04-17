@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Chat App</title>
+    <style>
+         body{
+          background-color: rgb(249, 242, 234);
+          font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+          margin: 0;
+          padding: 0;
+          
+        }
+        h1{
+          text-align: center;
+        }
+        option{
+          background-color: white;
+          position: relative;
+          
+        }
+        #form{
+          background-color: rgb(255, 184, 78);
+          width: 99.8%;
+          padding: .2%;
+          position: fixed;
+          bottom: 0;
+          height: fit-content;
+        }
+        #form > input {
+          width: 93%;
+          border-radius: 8px;
+          height: 1rem;
+          padding: .4%;     
+           }
+           #form >input {
+            outline: none;
+            border: 1px solid white;
+           }
+           #form > button {
+            width: 5%;
+            height: 1.8rem;
+            border-radius: 6px;
+            margin-left: .5%;
+            background-color: rgb(249, 242, 232);
+            border: 1px solid red;
+            color: red;
+            font-size: larger;
+           }
+           #messages { list-style-type: none;
+             margin: 0; 
+             padding: 0;
+             }
+      #messages > li { 
+        padding: 0.5rem 1rem; 
+        font-size: 2rem;
+      }
+     
+    </style>
+  </head>
+  <body>
+   
+    
+   <% if (locals.user) { %>
+    <h1>General Chat Room</h1>
+    <ul id="messages"></ul>
+    <ul id="img"></ul>
+    <form id="form" action="">
+      <input id="input" autocomplete="off" /><button>Send</button>
+    </form>
+   <% } else {%>
+    <div class="content" style="position: relative; background-color: rgb(255, 255, 255); justify-self: center; width: 40rem; padding: 1rem; justify-content: center; border-radius: 8px; box-shadow: 3px 4px 5px rgb(255, 198, 124); left: 5%; top: 9rem;">
+      <h1>For Access Chat Room Please login</h1>
+      <h2>If you don't have account please Create Account First</h2>
+      <a href="user/signin"><button style="background-color: rgb(255, 245, 232); margin-left:6rem; border-radius: 7px; color: rgb(246, 69, 69); border: 1px solid red;">Click here For Login </button></a>
+      <a href="user/signup"><button  style="background-color: rgb(255, 245, 232); border-radius: 7px; color: rgb(246, 69, 69); border: 1px solid red;">Click here For Create New Account </button></a>
+    </div>
+                
+    <% }  %>
+
+
+    
+   
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="https://kit.fontawesome.com/c9466f98da.js" crossorigin="anonymous"></script>
+    <script>
+      const socket = io();
+
+      const messages = document.getElementById('messages');
+      const form = document.getElementById('form');
+      const input = document.getElementById('input');
+
+      form.addEventListener('submit', function(e) {
+        e.preventDefault();
+        if (input.value) {
+          socket.emit('chat message', input.value);
+          input.value = '';
+        }
+       
+      });
+      socket.on('chat message', function(msg) {
+    var item = document.createElement('li');
+    item.textContent = msg;
+    messages.appendChild(item);
+    window.scrollTo(0, document.body.scrollHeight);
+  });
+
+      function upload(files) {
+        socket.emit("upload", files[0], (status) => {
+          console.log(status);
+        });
+      }
+    </script>
+
+  </body>
+</html>
